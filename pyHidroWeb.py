@@ -98,31 +98,42 @@ def select_station(basin, subbasin, river):
 			exit()
 
 
-	element_basin = driver.find_element_by_xpath('//*[@id="form:fsListaEstacoes:j_idt156"]')
-	all_basin = {i.get_attribute('text'):i for i in element_basin.find_elements_by_tag_name("option")}
-	all_basin[basin].click()
+	for label, ctr in [['Bacia', basin], ['SubBacia', subbasin], ['Rio', river]]:
+		time.sleep(1)
+		element = driver.find_element_by_xpath('//*[@id="form:fsListaEstacoes:componente"]')
+		all_elements = {i.find_element_by_tag_name("label").text:i for i in element.find_elements_by_class_name(name="form-group")}
 
-	time.sleep(2)
-	element_subbasin = driver.find_element_by_xpath('//*[@id="form:fsListaEstacoes:j_idt159"]')
-	all_subbasin = {i.get_attribute('text'):i for i in element_subbasin.find_elements_by_tag_name("option")}
-	all_subbasin[subbasin].click()
+		all_basin = {i.get_attribute('text'):i for i in all_elements[label].find_elements_by_tag_name("option")}
+		all_basin[ctr].click()
 
-	time.sleep(3)
-	element_river = driver.find_element_by_xpath('//*[@id="form:fsListaEstacoes:j_idt162-componente"]/div/select')
-	all_river = {i.get_attribute('text'):i for i in element_river.find_elements_by_tag_name("option")}
-	all_river[river].click()
 
 	click_css_selector(driver, '#form\\:fsListaEstacoes\\:bt')
 
-	time.sleep(4)
-	element_station = driver.find_element_by_xpath('//*[@id="form:fsListaEstacoes:fsListaEstacoesC:j_idt178:table"]/tbody')
-	all_station = [i.get_attribute("text") for i in element_station.find_elements_by_tag_name("a")]
-	print(all_station)
+	pg = 1
+	pgt = 2
+	list_sta = []
+	while pg <= pgt:
+		time.sleep(1)
+		driver.find_element_by_link_text('%s' % pg).click()
+		time.sleep(1)
+		station = driver.find_element_by_xpath('//*[@id="form:fsListaEstacoes:fsListaEstacoesC:componente"]')
+		all_station = [i.get_attribute("text") for i in station.find_elements_by_tag_name("a")]
+		for i in all_station:
+			if len(i) >= 8 and len(i) <= 9:
+				list_sta.append(i)
+		pg+=1
+		pgt = int(all_station[-3])
+
+	return list_sta
 
 
-#display = Display(visible=True, size=(1500, 900))
-#display.start()
 
-select_station(basin="ATLÂNTICO, TRECHO SUDESTE", subbasin="RIO TAQUARI", river="RIO CARREIRO")
-#ID_ESTACAO = '47001000'
-#download_hidroweb(ID_ESTACAO, home)
+display = Display(visible=False, size=(1500, 900))
+display.start()
+station = select_station(basin="ATLÂNTICO, TRECHO SUDESTE", subbasin="RIO TAQUARI", river="RIO CARREIRO")
+display.stop()
+for i in station:
+	display = Display(visible=False, size=(1500, 900))
+	display.start()
+	download_hidroweb(i, home)
+	display.stop()

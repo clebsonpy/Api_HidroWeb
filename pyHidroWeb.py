@@ -129,9 +129,10 @@ def select_station(basin, subbasin, river):
 
 
 display = Display(visible=False, size=(1500, 900))
-display.start()
-station = select_station(basin="ATLÂNTICO, TRECHO SUDESTE", subbasin="RIO TAQUARI", river="RIO CARREIRO")
-display.stop()
+#display.start()
+#station = select_station(basin="ATLÂNTICO, TRECHO SUDESTE", subbasin="RIO TAQUARI", river="RIO TAQUARI")
+#display.stop()
+station = ['58242000', '58239100', '02244042', '58300000', '02244161', '02244089']
 for i in station:
 	display = Display(visible=False, size=(1500, 900))
 	display.start()
